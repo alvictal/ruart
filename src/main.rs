@@ -1,15 +1,18 @@
 use core::time;
-use std::fs::OpenOptions;
-use std::io::{stdin, stdout, Read, Write};
 use std::io;
-use std::os::fd::AsRawFd;
-use std::os::unix::io::RawFd;
-use std::process;
-use std::env;
-use std::thread;
-use termios::*;
-use termios::os::linux::B115200;
-use termios::os::linux::B57600;
+use std:: {
+    fs::OpenOptions,
+    io::{stdin, stdout, Read, Write},
+    os::unix::io::AsRawFd,
+    os::unix::io::RawFd,
+    process,
+    env,
+    thread,
+};
+use termios:: {
+    *,
+    os::linux::{B115200, B57600}
+};
 
 
 fn setup_fd(fd: RawFd, baudrate: u32) -> io::Result<()> {
