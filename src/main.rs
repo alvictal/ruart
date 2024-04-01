@@ -5,6 +5,7 @@ use std:: {
     io::{stdin, stdout, Read, Write},
     os::unix::io::AsRawFd,
     os::unix::io::RawFd,
+    collections::HashMap,
     process,
     env,
     thread,
@@ -43,21 +44,19 @@ fn main() -> io::Result<()>  {
     let baudrate_str = &args[2];
 
     // Define pre-configured baud rates
-    let supported_baudrates = [B9600, B115200, B57600, B38400];
+    let supported_baudrates = HashMap::from([
+        ("9600",B9600), 
+        ("115200",B115200), 
+        ("57600",B57600), 
+        ("38400", B38400)
+    ]);
 
+    let baudrate_my_str: &str = &baudrate_str;
     // Parse baudrate from string
-    let baudrate: speed_t = match baudrate_str.parse::<u32>() {
-        Ok(value) => {
-            match supported_baudrates.iter().find(|&b| *b as u32 == value) {
-                Some(_) => value as speed_t,
-                None => {
-                    eprintln!("Unsupported baudrate: {}", baudrate_str);
-                    process::exit(1);
-                }
-            }
-        }
-        Err(_) => {
-            eprintln!("Invalid baudrate: {}", baudrate_str);
+    let baudrate: speed_t = match supported_baudrates.get(baudrate_my_str) {
+        Some(&value) => Some(value).unwrap_or_default(),
+        None => {
+            eprintln!("Unsupported baudrate: {}", baudrate_str);
             process::exit(1);
         }
     };
